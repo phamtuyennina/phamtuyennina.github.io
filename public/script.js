@@ -46,20 +46,8 @@ async function fetchBotResponse(messages) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages })
-      });
-    const data = await response.text();
+      }).then((response) => response.text()).then((data) => displayBotResponse(data)).catch(() => displayError());
     messagesContainer.removeChild(typingIndicator);
-    displayBotResponse(data);
-    // fetch("/api/chat", {
-    //     method: "POST",
-    //     body: formData,
-    // })
-    //     .then((response) => response.text())
-    //     .then((data) => displayBotResponse(data))
-    //     .catch(() => displayError())
-    //     .finally(() => {
-    //         selectedFile = null;
-    //     });
 }
 
 function displayBotResponse(data) {
@@ -71,13 +59,24 @@ function displayBotResponse(data) {
     appendMessage("model", "", botMessageId); 
     const botMessageDiv = document.getElementById(botMessageId);
     botMessageDiv.textContent = "";
-
     let index = 0;
+    const parsedHTML = marked.parse(data);
+    let tempDiv = document.createElement("div");
+    tempDiv.innerHTML = parsedHTML;
+    const textContent = tempDiv.innerText || tempDiv.textContent;
+    let displayedHTML = ""; 
+
     const interval = setInterval(() => {
-        if (index < data.length) {
-            botMessageDiv.textContent += data[index++];
+        if (index < textContent.length) {
+            displayedHTML += textContent[index++];
+            botMessageDiv.innerHTML = marked.parse(displayedHTML);
+            Prism.highlightAll();
+            scrollToBottom();
         } else {
             clearInterval(interval);
+            botMessageDiv.innerHTML = parsedHTML;
+            Prism.highlightAll();
+            scrollToBottom();
         }
     }, 10);
 }
@@ -98,7 +97,9 @@ function attachEventListeners() {
 
     inputField.addEventListener("keypress", (event) => {
         if (event.key === "Enter") {
+            event.preventDefault();
             sendMessage();
+            return false;
         }
     });
 

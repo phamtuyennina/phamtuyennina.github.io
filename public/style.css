@@ -8,7 +8,9 @@ body, html {
     flex-direction: column;
     justify-content: space-between;
   }
-  
+  p,ul{
+    margin-bottom: 0;
+  }
   .header {
     text-align: center;
     padding: 15px 0;
@@ -46,8 +48,11 @@ body, html {
     max-width: 70%; /* Prevent overly wide user messages */
     column-gap: 6px;
   }
-.message.user .msg-body{
-  padding: 10px !important;
+  .message.user .msg-body {
+    padding: 10px !important;
+    white-space: pre-wrap;
+    text-align: left;
+    line-height: 24px;
 }
 .message.user .msg-header{
   margin-top: 10px;
@@ -84,11 +89,18 @@ body, html {
     padding-top: 0;
     word-wrap: break-word; /* Wrap long text */
     overflow-wrap: break-word; /* Break overflowing words */
-    white-space: pre-wrap; /* Preserve formatting and wrap */
-    line-height: 1.5; /* Improve text readability */
+    line-height: normal; /* Improve text readability */
   }
   
-  
+  .msg-body p{
+    line-height: 22px;
+  }
+  .msg-body li {
+    margin-bottom: 10px;
+  }
+  .msg-body p:not(:last-child){
+    margin-bottom: 10px;
+  }
   .message.model .msg-body {
     background: none;
     color: #ffffff;
@@ -107,7 +119,7 @@ body, html {
     gap: 5px; /* Add spacing between elements */
   }
   
-  .footer input {
+  .footer textarea {
     flex: 1;
     background-color: #1e1e1e;
     color: #ffffff;
@@ -116,6 +128,8 @@ body, html {
     border-radius: 5px;
     outline: none;
     font-size: 16px;
+    height: 44px;
+    resize: none;
     margin-right: 10px; /* Space between input and button */
   }
   

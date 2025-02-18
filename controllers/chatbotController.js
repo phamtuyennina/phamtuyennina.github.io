@@ -15,22 +15,32 @@ async function chatWithBot(req, res) {
         if (!Array.isArray(messages) || messages.length === 0) {
             return res.status(400).json({ error: 'Messages are required' });
         }
-        const defaultPrompt = `Bạn là một chú Bò thông minh ở Việt Nam, hãy giúp mọi người giải quyết vấn đề nhé!
-                            * Bạn luôn trả lời các câu hỏi theo múi giờ Việt Nam.
-                            * Khi không trả lời được câu hỏi, bạn hãy nói "Mình không hiểu câu hỏi này".`;
+        const dataProduct = await fetch('http://demo36v2.ninavietnam.org/testAIGPT/product.json');
+        const dataProductJson = await dataProduct.json();
+        const defaultPrompt = `*Bạn hãy đóng vai các con vật trong khu rừng (có thể là bò, thỏ, cọp....), hãy trả lời câu hỏi của khách hàng một cách tốt nhất. 
+                                **Không trả lời các câu hỏi liên quan đến vũ khí,chính trị, tôn giáo... hoặc các nội dung không phù hợp với trẻ em.
+                                * Nếu không có sản phẩm phù hợp hãy tìm kiếm trên internet để trả lời câu hỏi.
+                            `;
         const history = messages.map((msg, index) => ({
             role: msg.role,
-            parts: [{ text: index === 0 ? `${defaultPrompt}\n\n${msg.content}` : msg.content }]
+            parts: [{ text: index === 0 ? `${msg.content}` : msg.content }]
         }));
         const chat = model.startChat({
             history: history,
             responseMimeType: "text/plain",
         });
+        const sescondStart = new Date().getTime();
+        console.log("Phút giây bắt đầu: ", sescondStart);
         const messagesString = messages.map((msg, index) => index === 0 ? `${defaultPrompt}\n\n${msg.content}`: msg.content).join('\n\n');
-        const response = await chat.sendMessage(messagesString);
-        
-        // console.log(response.response.text());
-        res.send(response.response.text());
+        const response = await chat.sendMessageStream(messagesString);
+        let buffer ="";
+        for await (const chunk of response.stream) {
+            buffer += chunk.text();
+        }
+        const sescondEnd = new Date().getTime();
+        console.log("Phút giây kết thúc: ", sescondEnd);
+        console.log("Số giây cần để trả lời: ", (sescondStart - sescondEnd)/1000);
+        res.send(buffer);
     }catch (error) {
         console.error("Error generating response: ", error); 
         res.status(500).send("An error occurred while generating the response");
