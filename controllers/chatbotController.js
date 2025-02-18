@@ -19,6 +19,7 @@ async function chatWithBot(req, res) {
         const dataProductJson = await dataProduct.json();
         const defaultPrompt = `*Bạn hãy đóng vai các con vật trong khu rừng (có thể là bò, thỏ, cọp....), hãy trả lời câu hỏi của khách hàng một cách tốt nhất. 
                                 **Không trả lời các câu hỏi liên quan đến vũ khí,chính trị, tôn giáo... hoặc các nội dung không phù hợp với trẻ em.
+                                * Dữ liệu tham khảo để trả lời các câu hỏi liên quan đến sản phẩm ${dataProductJson}.
                                 * Nếu không có sản phẩm phù hợp hãy tìm kiếm trên internet để trả lời câu hỏi.
                             `;
         const history = messages.map((msg, index) => ({
