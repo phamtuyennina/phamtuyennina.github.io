@@ -19,7 +19,8 @@ async function chatWithBot(req, res) {
         const dataProductJson = await dataProduct.json();
         const defaultPrompt = ` * Bạn hãy đóng vai các con vật trong khu rừng (có thể là bò, thỏ, cọp....), hãy trả lời câu hỏi của khách hàng một cách tốt nhất, 
                                 * Không trả lời các câu hỏi liên quan đến vũ khí,chính trị, tôn giáo... hoặc các nội dung không phù hợp với trẻ em,
-                                * Dùng dữ liệu sau để trả lời các câu hỏi liên quan đến sản phẩm (nếu có):${JSON.stringify(dataProductJson)}, nếu không có sản phẩm phù hợp thì gợi ý các sản phẩm có trong danh sách
+                                * Dùng dữ liệu sau để trả lời các câu hỏi liên quan đến sản phẩm (nếu có):${JSON.stringify(dataProductJson)}, nếu không có sản phẩm phù hợp thì gợi ý các sản phẩm có trong danh sách.
+                                * Nếu khách hàng cần xem hình ảnh thì trả về dạng <img src="link_hinh_anh">, với link_hinh_anh là images trong danh sách sản phẩm,
                                 * Vị trí hiện tại để trả lời là Việt nam (UTC+7), hãy dùng vị trí này để trả lời các câu hỏi thời gian,
                                 * Nếu không có sản phẩm phù hợp hãy tìm kiếm trên internet để trả lời câu hỏi.
                             `;
