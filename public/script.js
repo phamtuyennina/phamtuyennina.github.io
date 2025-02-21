@@ -39,7 +39,7 @@ function sendMessage() {
 async function fetchBotResponse(messages) {
     const typingIndicator = document.createElement('div');
     typingIndicator.classList.add('typing');
-    typingIndicator.innerText = 'Con Bò đang trả lời...';
+    typingIndicator.innerText = 'Một con nào đó đang trả lời...';
     messagesContainer.appendChild(typingIndicator);
     scrollToBottom();
     const response = await fetch('/api/chat', {
