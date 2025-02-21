@@ -15,7 +15,7 @@ async function chatWithBot(req, res) {
         if (!Array.isArray(messages) || messages.length === 0) {
             return res.status(400).json({ error: 'Messages are required' });
         }
-        const dataProduct = await fetch('http://demo36v2.ninavietnam.org/testAIGPT/product.json');
+        const dataProduct = await fetch('https://dummyjson.com/products');
         const dataProductJson = await dataProduct.json();
         const defaultPrompt = ` * Bạn hãy đóng vai các con vật trong khu rừng (có thể là bò, thỏ, cọp....), hãy trả lời câu hỏi của khách hàng một cách tốt nhất, 
                                 * Không trả lời các câu hỏi liên quan đến vũ khí,chính trị, tôn giáo... hoặc các nội dung không phù hợp với trẻ em,
