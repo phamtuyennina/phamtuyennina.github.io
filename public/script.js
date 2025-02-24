@@ -1,4 +1,3 @@
-// Counter to assign unique IDs to bot messages
 let messageCount = 0;
 let selectedFile = null; 
 var messages = [];
@@ -23,11 +22,9 @@ function appendMessage(sender, message, id = null) {
     document.getElementById("chatContainer").insertAdjacentHTML('beforeend', messageHtml);
     scrollToBottom();
 }
-
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
 function sendMessage() {
     const inputField = document.getElementById("text");
     const rawText = inputField.value;
@@ -35,11 +32,10 @@ function sendMessage() {
     fetchBotResponse(messages); 
     inputField.value = "";
 }
-
 async function fetchBotResponse(messages) {
     const typingIndicator = document.createElement('div');
     typingIndicator.classList.add('typing');
-    typingIndicator.innerText = 'Một con nào đó đang trả lời...';
+    typingIndicator.innerText = 'Chatbot đang trả lời...';
     messagesContainer.appendChild(typingIndicator);
     scrollToBottom();
     const response = await fetch('/api/chat', {
@@ -49,7 +45,6 @@ async function fetchBotResponse(messages) {
       }).then((response) => response.text()).then((data) => displayBotResponse(data)).catch(() => displayError());
     messagesContainer.removeChild(typingIndicator);
 }
-
 function displayBotResponse(data) {
     const botMessageId = `botMessage-${messageCount++}`;
     messages.push({
@@ -65,7 +60,6 @@ function displayBotResponse(data) {
     tempDiv.innerHTML = parsedHTML;
     const textContent = tempDiv.innerText || tempDiv.textContent;
     let displayedHTML = ""; 
-
     const interval = setInterval(() => {
         if (index < textContent.length) {
             displayedHTML += textContent[index++];
@@ -80,13 +74,9 @@ function displayBotResponse(data) {
         }
     }, 10);
 }
-
-// Function to display an error message in the chat
 function displayError() {
     appendMessage("model error", "Failed to fetch a response from the server.");
 }
-
-// Attach event listeners for the send button and the Enter key
 function attachEventListeners() {
     const sendButton = document.getElementById("send");
     const inputField = document.getElementById("text");
@@ -102,18 +92,5 @@ function attachEventListeners() {
             return false;
         }
     });
-
-    // Trigger file input on attachment button click
-    // attachmentButton.addEventListener("click", () => {
-    //     fileInput.click();
-    // });
-
-    // Store selected file
-    // fileInput.addEventListener("change", (event) => {
-    //     selectedFile = event.target.files[0];
-    //     appendMessage("user", `Selected File: ${selectedFile.name}`);
-    // });
 }
-
-// Initialize the chat application when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", attachEventListeners);

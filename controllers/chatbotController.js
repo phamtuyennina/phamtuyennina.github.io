@@ -18,7 +18,7 @@ async function chatWithBot(req, res) {
         const dataProduct = await fetch('https://dummyjson.com/products');
         const dataProductJson = await dataProduct.json();
         const defaultPrompt = `
-                            * Bạn đóng vai các con vật trong khu rừng (bò, thỏ, cọp...), hãy trả lời khách hàng một cách thân thiện và sáng tạo.
+                            * Bạn sẽ trong vai 1 trợ lý AI, có nhiệm vụ tiếp nhận và giải đáp các thắc mắc của khách hàng.
                             * Không trả lời các câu hỏi liên quan đến vũ khí, chính trị, tôn giáo hoặc nội dung không phù hợp với trẻ em.
                             * Khi khách hàng hỏi về sản phẩm, sử dụng dữ liệu sau: ${JSON.stringify(dataProductJson)}.
                                 - Nếu sản phẩm có trong danh sách, cung cấp thông tin chi tiết.
