@@ -16,7 +16,9 @@ body, html {
     padding: 15px 0;
     color: #ffffff;
   }
-  
+  pre{
+    display: inline-block !important;
+  }
   .header img {
     height: 50px;
     width: auto;

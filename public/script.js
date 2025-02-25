@@ -51,28 +51,43 @@ function displayBotResponse(data) {
         role: 'model',
         content: data
     });
-    appendMessage("model", "", botMessageId); 
+
+    appendMessage("model", "", botMessageId);
     const botMessageDiv = document.getElementById(botMessageId);
     botMessageDiv.textContent = "";
+
     let index = 0;
-    const parsedHTML = marked.parse(data);
-    let tempDiv = document.createElement("div");
-    tempDiv.innerHTML = parsedHTML;
-    const textContent = tempDiv.innerText || tempDiv.textContent;
-    let displayedHTML = ""; 
+    let displayedText = ""; 
+    let htmlBlocks = [];
+    let cleanedData = data.replace(/```html([\s\S]*?)```/g, (_, content) => content.trim());
+    cleanedData = cleanedData.replace(/(<(table|img|div|ul|ol|li|h[1-6])[\s\S]*?>[\s\S]*?<\/\2>)/gi, (match) => {
+        htmlBlocks.push(match);
+        return `{{HTML_BLOCK_${htmlBlocks.length - 1}}}`;
+    });
+    hljs.addPlugin(new CopyButtonPlugin({
+        autohide: false,
+      }));
+    const textContent = cleanedData;
     const interval = setInterval(() => {
         if (index < textContent.length) {
-            displayedHTML += textContent[index++];
-            botMessageDiv.innerHTML = marked.parse(displayedHTML);
-            Prism.highlightAll();
+            displayedText += textContent[index++];
+            botMessageDiv.innerHTML = marked.parse(displayedText);
+            hljs.highlightAll();
+            htmlBlocks.forEach((block, i) => {
+                botMessageDiv.innerHTML = botMessageDiv.innerHTML.replace(`{{HTML_BLOCK_${i}}}`, block);
+            });
             scrollToBottom();
         } else {
             clearInterval(interval);
-            botMessageDiv.innerHTML = parsedHTML;
-            Prism.highlightAll();
+            botMessageDiv.innerHTML = marked.parse(cleanedData);
+            htmlBlocks.forEach((block, i) => {
+                botMessageDiv.innerHTML = botMessageDiv.innerHTML.replace(`{{HTML_BLOCK_${i}}}`, block);
+            });
+            hljs.highlightAll();
             scrollToBottom();
         }
     }, 10);
+   
 }
 function displayError() {
     appendMessage("model error", "Failed to fetch a response from the server.");

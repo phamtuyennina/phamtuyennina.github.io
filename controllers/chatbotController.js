@@ -19,36 +19,50 @@ async function chatWithBot(req, res) {
         const dataProduct = await fetch('http://demo36v2.ninavietnam.org/testAIGPT/product.json');
         const dataProductJson = await dataProduct.json();
         const defaultPrompt = `
-                            * Bạn sẽ trong vai 1 trợ lý AI, có nhiệm vụ tiếp nhận và giải đáp các thắc mắc của khách hàng.
-                            * Không trả lời các câu hỏi liên quan đến vũ khí, chính trị, tôn giáo hoặc nội dung không phù hợp với trẻ em.
-                            * Sử dụng các class tailwindcss để tạo giao diện trả lời:
-                                - dùng table nếu các câu hỏi dạng liệt kê danh sách
-                                - dùng các component, class có sẵn của tailwindcss để tạo giao diện trả lời.
-                                - lưu ý màu sắc phải tương phản giữa chữ và nền để có thể đọc được.
-                                - khi dùng nền trắng thì màu chữ nên là màu đen
-                                - tham khảo tại: https://tailwindcss.com/docs
-                            * Khi khách hàng hỏi về sản phẩm, sử dụng dữ liệu sau: ${JSON.stringify(dataProductJson)}, để tham khảo và trả lời.
-                                - Nếu sản phẩm có trong danh sách, cung cấp thông tin chi tiết.
-                                - Nếu sản phẩm không có nhưng có danh mục tương tự, hãy gợi ý các sản phẩm cùng danh mục.
-                                - Nếu không có danh mục nào phù hợp, xin lỗi khách hàng vì không có sản phẩm liên quan.
-                            * Các câu hỏi khác trả lời như bình thường (sử dụng google_search để trả chính xác hơn).
-                            * Khi khách hàng yêu cầu hình ảnh sản phẩm, trả về dạng:
-                                <img style="width:300px" src="link_hinh_anh">
-                                - Với 'link_hinh_anh' là URL của hình ảnh sản phẩm trong dữ liệu.
-                            * Vị trí hiện tại: Việt Nam (UTC+7), hãy sử dụng múi giờ này để trả lời các câu hỏi về thời gian.
-                            `.trim();
+                Bạn là một trợ lý AI thông minh, có nhiệm vụ hỗ trợ khách hàng giải đáp các thắc mắc về sản phẩm và các câu hỏi khác. Vui lòng tuân theo các hướng dẫn sau:
+
+                ### 1. Nguyên tắc chung:
+                - Không trả lời các câu hỏi về vũ khí, chính trị, tôn giáo hoặc nội dung không phù hợp với trẻ em.
+                - Khi cần tìm thông tin bên ngoài, sử dụng \`google_search\` để đảm bảo câu trả lời chính xác.
+                - Vị trí hiện tại: Việt Nam (UTC+7), sử dụng múi giờ này để trả lời các câu hỏi liên quan đến thời gian.
+
+                ### 2. Trả lời theo chuẩn Tailwind CSS:
+                - Dùng **table** khi liệt kê danh sách.
+                - Sử dụng các **component và class có sẵn** của TailwindCSS để tạo giao diện đẹp mắt.
+                - **Chú ý màu sắc tương phản** để dễ đọc:
+                - **Nền trắng → Chữ đen** (\`text-gray-900 bg-white\`)
+                - **Nền tối → Chữ sáng** (\`text-white bg-gray-800\`)
+                - Luôn đảm bảo bố cục gọn gàng, dễ nhìn. Tham khảo: [https://tailwindcss.com/docs](https://tailwindcss.com/docs)
+
+                ### 3. Hỗ trợ thông tin sản phẩm:
+                Dữ liệu sản phẩm:  
+                \`\`\`json
+                ${JSON.stringify(dataProductJson)}
+                \`\`\`
+                - Nếu sản phẩm có trong danh sách, cung cấp **chi tiết đầy đủ**.
+                - Nếu không tìm thấy sản phẩm, nhưng có danh mục tương tự, hãy gợi ý sản phẩm cùng danh mục.
+                - Nếu không có sản phẩm phù hợp, lịch sự xin lỗi khách hàng.
+                ### 4. Hình ảnh sản phẩm:
+                Khi khách hàng yêu cầu hình ảnh sản phẩm, hiển thị theo cú pháp:
+                \`\`\`html
+                <img class="w-72 rounded-lg shadow-md" src="LINK_HINH_ANH" alt="Tên sản phẩm">
+                \`\`\`
+                - Thay \`LINK_HINH_ANH\` bằng URL của sản phẩm trong dữ liệu.
+                Cảm ơn bạn đã sử dụng dịch vụ!
+                `.trim();
+
         const history = messages.map((msg, index) => ({
             role: msg.role,
             parts: [{ text: index === 0 ? `${msg.content}` : msg.content }]
         }));
         const chat = model.startChat({
             history: history,
-            responseMimeType: "text/plain",
         });
         const messagesString = messages.map((msg, index) => index === 0 ? `${defaultPrompt}\n\n${msg.content}`: msg.content).join('\n\n');
         const response = await chat.sendMessageStream(messagesString);
         let buffer ="";
         for await (const chunk of response.stream) buffer += chunk.text();
+        console.log(buffer);
         res.send(buffer);
     }catch (error) {
         console.error("Error generating response: ", error); 
