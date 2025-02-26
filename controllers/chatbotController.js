@@ -15,7 +15,8 @@ async function chatWithBot(req, res) {
         if (!Array.isArray(messages) || messages.length === 0) {
             return res.status(400).json({ error: 'Messages are required' });
         }
-        const dataProduct = await fetch('https://dummyjson.com/products');
+        // const dataProduct = await fetch('https://dummyjson.com/products');
+        const dataProduct = await fetch('http://demo36v2.ninavietnam.org/testAIGPT/product.json');
         const dataProductJson = await dataProduct.json();
         const defaultPrompt = `
                 Bạn là một trợ lý AI thông minh, có nhiệm vụ hỗ trợ khách hàng giải đáp các thắc mắc về sản phẩm và các câu hỏi khác. Vui lòng tuân theo các hướng dẫn sau:
