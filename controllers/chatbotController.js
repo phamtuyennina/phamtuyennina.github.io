@@ -15,8 +15,7 @@ async function chatWithBot(req, res) {
         if (!Array.isArray(messages) || messages.length === 0) {
             return res.status(400).json({ error: 'Messages are required' });
         }
-        // const dataProduct = await fetch('https://dummyjson.com/products');
-        const dataProduct = await fetch('http://demo36v2.ninavietnam.org/testAIGPT/product.json');
+        const dataProduct = await fetch('https://dummyjson.com/products');
         const dataProductJson = await dataProduct.json();
         const defaultPrompt = `
                 Bạn là một trợ lý AI thông minh, có nhiệm vụ hỗ trợ khách hàng giải đáp các thắc mắc về sản phẩm và các câu hỏi khác. Vui lòng tuân theo các hướng dẫn sau:
@@ -50,19 +49,24 @@ async function chatWithBot(req, res) {
                 - Thay \`LINK_HINH_ANH\` bằng URL của sản phẩm trong dữ liệu.
                 Cảm ơn bạn đã sử dụng dịch vụ!
                 `.trim();
-
-        const history = messages.map((msg, index) => ({
+        const defaultHistory = [
+            {
+                role: 'user',
+                parts: [{text:defaultPrompt}]
+            }
+        ];
+        const messageHistory = messages.map((msg, index) => ({
             role: msg.role,
             parts: [{ text: index === 0 ? `${msg.content}` : msg.content }]
         }));
+        const history = [...defaultHistory, ...messageHistory];
         const chat = model.startChat({
             history: history,
         });
-        const messagesString = messages.map((msg, index) => index === 0 ? `${defaultPrompt}\n\n${msg.content}`: msg.content).join('\n\n');
+        const messagesString = messages[messages.length - 1].content;
         const response = await chat.sendMessageStream(messagesString);
         let buffer ="";
         for await (const chunk of response.stream) buffer += chunk.text();
-        console.log(buffer);
         res.send(buffer);
     }catch (error) {
         console.error("Error generating response: ", error); 
