@@ -66,9 +66,11 @@ async function chatWithBot(req, res) {
         });
         const messagesString = messages[messages.length - 1].content;
         const response = await chat.sendMessageStream(messagesString);
-        let buffer ="";
-        for await (const chunk of response.stream) buffer += chunk.text();
-        res.send(buffer);
+        for await (const chunk of response.stream) {
+            const chunkText = chunk.text();
+            res.write(chunkText);
+        }
+        res.end();
     }catch (error) {
         console.error("Error generating response: ", error); 
         res.status(500).send("An error occurred while generating the response");
